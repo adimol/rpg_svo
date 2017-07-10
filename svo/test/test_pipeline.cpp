@@ -58,20 +58,27 @@ BenchmarkNode::~BenchmarkNode()
 
 void BenchmarkNode::runFromFolder()
 {
+  SVO_START_TIMER("main");
   for(int img_id = 2; img_id < 188; ++img_id)
   {
+    // SVO_START_TIMER("img_load");
     // load image
     std::stringstream ss;
     ss << svo::test_utils::getDatasetDir() << "/sin2_tex2_h1_v8_d/img/frame_"
        << std::setw( 6 ) << std::setfill( '0' ) << img_id << "_0.png";
     if(img_id == 2)
       std::cout << "reading image " << ss.str() << std::endl;
+    SVO_START_TIMER("img_load");
     cv::Mat img(cv::imread(ss.str().c_str(), 0));
+    SVO_STOP_TIMER("img_load");
     assert(!img.empty());
+
+    //SVO_STOP_TIMER("img_load");
 
     // process frame
     vo_->addImage(img, 0.01*img_id);
 
+    SVO_START_TIMER("final_print");
     // display tracking quality
     if(vo_->lastFrame() != NULL)
     {
@@ -81,7 +88,10 @@ void BenchmarkNode::runFromFolder()
 
     	// access the pose of the camera via vo_->lastFrame()->T_f_w_.
     }
+    SVO_STOP_TIMER("final_print");
   }
+  SVO_STOP_TIMER("main");
+  g_permon->writeToFile();
 }
 
 } // namespace svo

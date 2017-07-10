@@ -58,6 +58,9 @@ FrameHandlerBase::FrameHandlerBase() :
   g_permon->addTimer("tot_time");
   g_permon->addTimer("feature_detect");
   g_permon->addTimer("feature_update");
+  g_permon->addTimer("main");
+  g_permon->addTimer("img_load");
+  g_permon->addTimer("final_print");
   g_permon->addLog("timestamp");
   g_permon->addLog("img_align_n_tracked");
   g_permon->addLog("repr_n_mps");

@@ -169,7 +169,7 @@ void DepthFilter::reset()
 
 void DepthFilter::updateSeedsLoop()
 {
-  stick_thread_to_core_id(1);
+  stick_thread_to_core_id(3);
   while(!boost::this_thread::interruption_requested())
   {
     FramePtr frame;
@@ -191,6 +191,7 @@ void DepthFilter::updateSeedsLoop()
       }
     }
     SVO_START_TIMER("feature_update");
+    usleep(100);
     updateSeeds(frame);
     SVO_STOP_TIMER("feature_update");
     if(frame->isKeyframe()) {
