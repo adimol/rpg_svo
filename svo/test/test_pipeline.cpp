@@ -89,10 +89,10 @@ void BenchmarkNode::runFromFolder()
 int main(int argc, char** argv)
 {
   {
+    stick_thread_to_core_id(0);
     svo::BenchmarkNode benchmark;
     benchmark.runFromFolder();
   }
   printf("BenchmarkNode finished.\n");
   return 0;
 }
-

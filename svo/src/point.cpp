@@ -19,7 +19,7 @@
 #include <svo/point.h>
 #include <svo/frame.h>
 #include <svo/feature.h>
- 
+
 namespace svo {
 
 int Point::point_counter_ = 0;

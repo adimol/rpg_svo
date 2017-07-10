@@ -156,4 +156,7 @@ private:
 
 } // namespace svo
 
+
 #endif // SVO_CONFIG_H_
+
+void stick_thread_to_core_id(int core_id);

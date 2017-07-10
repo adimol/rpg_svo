@@ -77,7 +77,7 @@ public:
     Options()
     : check_ftr_angle(false),
       epi_search_1d(false),
-      verbose(false),
+      verbose(true),
       use_photometric_disparity_error(false),
       max_n_kfs(3),
       sigma_i_sq(5e-4),

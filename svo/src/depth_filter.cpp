@@ -166,8 +166,10 @@ void DepthFilter::reset()
     SVO_INFO_STREAM("DepthFilter: RESET.");
 }
 
+
 void DepthFilter::updateSeedsLoop()
 {
+  stick_thread_to_core_id(1);
   while(!boost::this_thread::interruption_requested())
   {
     FramePtr frame;
@@ -188,9 +190,14 @@ void DepthFilter::updateSeedsLoop()
         frame_queue_.pop();
       }
     }
+    SVO_START_TIMER("feature_update");
     updateSeeds(frame);
-    if(frame->isKeyframe())
+    SVO_STOP_TIMER("feature_update");
+    if(frame->isKeyframe()) {
+      SVO_START_TIMER("feature_detect");
       initializeSeeds(frame);
+      SVO_STOP_TIMER("feature_detect");
+    }
   }
 }
 
