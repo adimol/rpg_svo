@@ -29,6 +29,8 @@
 #include <sophus/se3.h>
 #include <iostream>
 #include "test_utils.h"
+#include <thread>
+#include <chrono>
 
 namespace svo {
 
@@ -61,6 +63,10 @@ void BenchmarkNode::runFromFolder()
   SVO_START_TIMER("main");
   for(int img_id = 2; img_id < 188; ++img_id)
   {
+    SVO_START_TIMER("live_frames");
+    // double start_time = SVO_GET_TIME();
+    // double end_time = start_time;
+
     // SVO_START_TIMER("img_load");
     // load image
     std::stringstream ss;
@@ -78,8 +84,11 @@ void BenchmarkNode::runFromFolder()
     // process frame
     vo_->addImage(img, 0.01*img_id);
 
-    SVO_START_TIMER("final_print");
+    //SVO_START_TIMER("final_print");
     // display tracking quality
+
+
+
     if(vo_->lastFrame() != NULL)
     {
     	std::cout << "Frame-Id: " << vo_->lastFrame()->id_ << " \t"
@@ -88,10 +97,20 @@ void BenchmarkNode::runFromFolder()
 
     	// access the pose of the camera via vo_->lastFrame()->T_f_w_.
     }
-    SVO_STOP_TIMER("final_print");
+    //SVO_STOP_TIMER("final_print");
+    
+    SVO_STOP_TIMER("live_frames");
+    double frame_time = SVO_GET_TIMER("live_frames");
+    std::this_thread::sleep_for(std::chrono::microseconds(33000 - (int)(frame_time * 1000000.0)));
+    //timespec ts;
+    //ts.tv_sec = 0;
+    //ts.tv_nsec = 33000000 - (long long int)(frame_time * 1000000000.0);
+    //nanosleep(&ts, NULL);
   }
+
   SVO_STOP_TIMER("main");
   g_permon->writeToFile();
+
 }
 
 } // namespace svo
@@ -99,7 +118,7 @@ void BenchmarkNode::runFromFolder()
 int main(int argc, char** argv)
 {
   {
-    stick_thread_to_core_id(0);
+    stick_thread_to_core_id(4);
     svo::BenchmarkNode benchmark;
     benchmark.runFromFolder();
   }

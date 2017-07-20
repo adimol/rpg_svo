@@ -85,6 +85,7 @@ namespace svo
   #define SVO_LOG4(value1, value2, value3, value4) SVO_LOG2(value1, value2); SVO_LOG2(value3, value4)
   #define SVO_START_TIMER(name) g_permon->startTimer((name))
   #define SVO_STOP_TIMER(name) g_permon->stopTimer((name))
+  #define SVO_GET_TIMER(name) g_permon->getTime(name);
 #else
   #define SVO_LOG(v)
   #define SVO_LOG2(v1, v2)

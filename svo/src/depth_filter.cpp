@@ -169,7 +169,7 @@ void DepthFilter::reset()
 
 void DepthFilter::updateSeedsLoop()
 {
-  stick_thread_to_core_id(3);
+  stick_thread_to_core_id(5);
   while(!boost::this_thread::interruption_requested())
   {
     FramePtr frame;

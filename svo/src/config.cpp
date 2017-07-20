@@ -96,14 +96,16 @@ Config& Config::getInstance()
 } // namespace svo
 
 void stick_thread_to_core_id(int core_id) {
-   int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-   if (core_id < 0 || core_id >= num_cores)
-      exit(0); //EINVAL
+  int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+  if (core_id < 0 || core_id >= num_cores)
+    exit(0); //EINVAL
 
-   cpu_set_t cpuset;
-   CPU_ZERO(&cpuset);
-   CPU_SET(core_id, &cpuset);
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(core_id, &cpuset);
 
-   pthread_t current_thread = pthread_self();
-   pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+  pthread_t current_thread = pthread_self();
+  int result = pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+  if (result != 0)
+    exit(0);
 }
