@@ -65,8 +65,8 @@ VoNode::VoNode() :
   quit_(false)
 {
   // Start user input thread in parallel thread that listens to console keys
-  if(vk::getParam<bool>("svo/accept_console_user_input", true))
-    user_input_thread_ = boost::make_shared<vk::UserInputThread>();
+  //if(vk::getParam<bool>("svo/accept_console_user_input", true))
+    //user_input_thread_ = boost::make_shared<vk::UserInputThread>();
 
   // Create Camera
   if(!vk::camera_loader::loadFromRosNs("svo", cam_))
@@ -96,6 +96,7 @@ VoNode::~VoNode()
 
 void VoNode::imgCb(const sensor_msgs::ImageConstPtr& msg)
 {
+  //printf("Image number: %d\n", count_img);
   cv::Mat img;
   try {
     img = cv_bridge::toCvShare(msg, "mono8")->image;
@@ -104,6 +105,8 @@ void VoNode::imgCb(const sensor_msgs::ImageConstPtr& msg)
   }
   processUserActions();
   vo_->addImage(img, msg->header.stamp.toSec());
+  //count_img++; 
+/*
   visualizer_.publishMinimal(img, vo_->lastFrame(), *vo_, msg->header.stamp.toSec());
 
   if(publish_markers_ && vo_->stage() != FrameHandlerBase::STAGE_PAUSED)
@@ -114,6 +117,7 @@ void VoNode::imgCb(const sensor_msgs::ImageConstPtr& msg)
 
   if(vo_->stage() == FrameHandlerMono::STAGE_PAUSED)
     usleep(100000);
+*/
 }
 
 void VoNode::processUserActions()
@@ -166,7 +170,8 @@ int main(int argc, char **argv)
   image_transport::Subscriber it_sub = it.subscribe(cam_topic, 5, &svo::VoNode::imgCb, &vo_node);
 
   // subscribe to remote input
-  vo_node.sub_remote_key_ = nh.subscribe("svo/remote_key", 5, &svo::VoNode::remoteKeyCb, &vo_node);
+  //vo_node.sub_remote_key_ = nh.subscribe("svo/remote_key", 5, &svo::VoNode::remoteKeyCb, &vo_node);
+  stick_thread_to_core_id(4);
 
   // start processing callbacks
   while(ros::ok() && !vo_node.quit_)
@@ -174,7 +179,7 @@ int main(int argc, char **argv)
     ros::spinOnce();
     // TODO check when last image was processed. when too long ago. publish warning that no msgs are received!
   }
-
+  //printf("Image number: %d\n", count_img);
   printf("SVO terminated.\n");
   return 0;
 }
