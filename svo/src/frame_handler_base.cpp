@@ -63,7 +63,6 @@ FrameHandlerBase::FrameHandlerBase() :
   g_permon->addTimer("feature_update");
   g_permon->addTimer("main");
   g_permon->addTimer("img_load");
-  //g_permon->addTimer("final_print");
   g_permon->addTimer("live_frames");
   g_permon->addLog("timestamp");
   g_permon->addLog("img_align_n_tracked");
@@ -119,17 +118,6 @@ int FrameHandlerBase::finishFrameProcessingCommon(
     const UpdateResult dropout,
     const size_t num_observations)
 {
-
-    //SVO_STOP_TIMER("live_frames");
-    //double frame_time = SVO_GET_TIMER("live_frames");
-    //std::this_thread::sleep_for(std::chrono::microseconds(33000 - (int)(frame_time * 1000000.0)));
-
-   // timespec ts;
-   // ts.tv_sec = 0;
-    //ts.tv_nsec = 33000000 - (long long int)(frame_time * 1000000000.0);
-    //nanosleep(&ts, NULL);
-
-
   SVO_DEBUG_STREAM("Frame: "<<update_id<<"\t fps-avg = "<< 1.0/acc_frame_timings_.getMean()<<"\t nObs = "<<acc_num_obs_.getMean());
   SVO_LOG(dropout);
 

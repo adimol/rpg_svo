@@ -191,7 +191,6 @@ void DepthFilter::updateSeedsLoop()
       }
     }
     SVO_START_TIMER("feature_update");
-    usleep(100);
     updateSeeds(frame);
     SVO_STOP_TIMER("feature_update");
     if(frame->isKeyframe()) {

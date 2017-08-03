@@ -96,16 +96,14 @@ VoNode::~VoNode()
 
 void VoNode::imgCb(const sensor_msgs::ImageConstPtr& msg)
 {
-  //printf("Image number: %d\n", count_img);
   cv::Mat img;
   try {
     img = cv_bridge::toCvShare(msg, "mono8")->image;
   } catch (cv_bridge::Exception& e) {
     ROS_ERROR("cv_bridge exception: %s", e.what());
   }
-  processUserActions();
+  //processUserActions();
   vo_->addImage(img, msg->header.stamp.toSec());
-  //count_img++; 
 /*
   visualizer_.publishMinimal(img, vo_->lastFrame(), *vo_, msg->header.stamp.toSec());
 
@@ -171,15 +169,16 @@ int main(int argc, char **argv)
 
   // subscribe to remote input
   //vo_node.sub_remote_key_ = nh.subscribe("svo/remote_key", 5, &svo::VoNode::remoteKeyCb, &vo_node);
+  ros::Rate loop_rate(vk::getParam<int>("svo/fps", 30));
   stick_thread_to_core_id(4);
 
   // start processing callbacks
   while(ros::ok() && !vo_node.quit_)
   {
     ros::spinOnce();
+    loop_rate.sleep();
     // TODO check when last image was processed. when too long ago. publish warning that no msgs are received!
   }
-  //printf("Image number: %d\n", count_img);
   printf("SVO terminated.\n");
   return 0;
 }
