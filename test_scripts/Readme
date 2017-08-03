@@ -1,0 +1,2 @@
+- Place ROS bag file in this folder and rename to dataset.bag
+- Run scripts.sh from this folder
