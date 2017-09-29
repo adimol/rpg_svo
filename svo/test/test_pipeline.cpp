@@ -45,7 +45,8 @@ public:
 
 BenchmarkNode::BenchmarkNode()
 {
-  cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
+  //cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
+  cam_ = new vk::ATANCamera(640, 480,  0.509326, 0.796651, 0.45905, 0.510056, 1);
   vo_ = new svo::FrameHandlerMono(cam_);
   vo_->start();
 }
@@ -58,14 +59,14 @@ BenchmarkNode::~BenchmarkNode()
 
 void BenchmarkNode::runFromFolder()
 {
-  for(int img_id = 2; img_id < 188; ++img_id)
+  for(int img_id = 0; img_id < 1360; ++img_id)
   {
     // load image
     std::stringstream ss;
-    ss << svo::test_utils::getDatasetDir() << "/sin2_tex2_h1_v8_d/img/frame_"
-       << std::setw( 6 ) << std::setfill( '0' ) << img_id << "_0.png";
-    if(img_id == 2)
-      std::cout << "reading image " << ss.str() << std::endl;
+    ss << svo::test_utils::getDatasetDir() << "/sin2_tex2_h1_v8_d/img/"
+       << std::setw( 4 ) << std::setfill( '0' ) << img_id << ".png";
+    if(img_id == 2);
+      //std::cout << "reading image " << ss.str() << std::endl;
     cv::Mat img(cv::imread(ss.str().c_str(), 0));
     assert(!img.empty());
 
@@ -75,12 +76,39 @@ void BenchmarkNode::runFromFolder()
     // display tracking quality
     if(vo_->lastFrame() != NULL)
     {
-    	std::cout << "Frame-Id: " << vo_->lastFrame()->id_ << " \t"
-                  << "#Features: " << vo_->lastNumObservations() << " \t"
-                  << "Proc. Time: " << vo_->lastProcessingTime()*1000 << "ms \n";
+    	// std::cout << "Frame-Id: " << vo_->lastFrame()->id_ << " \t"
+        //           << "#Features: " << vo_->lastNumObservations() << " \t"
+        //           << "Proc. Time: " << vo_->lastProcessingTime()*1000 << "ms \n";
+        //*mat = vo_->lastFrame()->T_f_w_.matrix().cast<float>();
+    const FramePtr& frame = vo_->lastFrame();
+    // Sophus::SE3 T_world_from_vision_(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+    // Sophus::SE3 T_world_from_cam(T_world_from_vision_*frame->T_f_w_.inverse());
+    // Eigen::Quaterniond q = Eigen::Quaterniond(T_world_from_cam.rotation_matrix() *
+    //     T_world_from_vision_.rotation_matrix().transpose());
+    // Eigen::Vector3d p = T_world_from_cam.translation();
+
+    // Sophus::SE3 T_world_from_vision_(Eigen::Matrix3d::Identity(), Eigen::Vector3d::Zero());
+    // Sophus::SE3 T_cam_from_world(frame->T_f_w_ * T_world_from_vision_);
+    // Eigen::Quaterniond q = Eigen::Quaterniond(T_cam_from_world.rotation_matrix());
+    // Eigen::Vector3d p = T_cam_from_world.translation();
+
+
+     Eigen::Vector3d p =  vo_->lastFrame()->T_f_w_.translation();
+    Eigen::Quaterniond q = Eigen::Quaterniond(vo_->lastFrame()->T_f_w_.rotation_matrix());
+
+    std::cout << 0.01*img_id << " "
+              << p[0] << " "
+              << p[1] << " "
+              << p[2] << " "
+              << q.x() << " "
+              << q.y() << " "
+              << q.z() << " "
+              << q.w() << std::endl;
+
 
     	// access the pose of the camera via vo_->lastFrame()->T_f_w_.
     }
+    //usleep(120000);
   }
 }
 
@@ -92,7 +120,6 @@ int main(int argc, char** argv)
     svo::BenchmarkNode benchmark;
     benchmark.runFromFolder();
   }
-  printf("BenchmarkNode finished.\n");
+  //printf("BenchmarkNode finished.\n");
   return 0;
 }
-

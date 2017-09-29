@@ -106,11 +106,23 @@ void VoNode::imgCb(const sensor_msgs::ImageConstPtr& msg)
   vo_->addImage(img, msg->header.stamp.toSec());
   visualizer_.publishMinimal(img, vo_->lastFrame(), *vo_, msg->header.stamp.toSec());
 
-  if(publish_markers_ && vo_->stage() != FrameHandlerBase::STAGE_PAUSED)
-    visualizer_.visualizeMarkers(vo_->lastFrame(), vo_->coreKeyframes(), vo_->map());
+  // if(publish_markers_ && vo_->stage() != FrameHandlerBase::STAGE_PAUSED)
+  //   visualizer_.visualizeMarkers(vo_->lastFrame(), vo_->coreKeyframes(), vo_->map());
+  //
+  // if(publish_dense_input_)
+  //   visualizer_.exportToDense(vo_->lastFrame());
+  //
+  //   Eigen::Vector3d p =  vo_->lastFrame()->T_f_w_.translation();
+  //  Eigen::Quaterniond q = Eigen::Quaterniond(vo_->lastFrame()->T_f_w_.rotation_matrix());
 
-  if(publish_dense_input_)
-    visualizer_.exportToDense(vo_->lastFrame());
+   std::cout << 0.01*img_id << " "
+             << p[0] << " "
+             << p[1] << " "
+             << p[2] << " "
+             << q.x() << " "
+             << q.y() << " "
+             << q.z() << " "
+             << q.w() << std::endl;
 
   if(vo_->stage() == FrameHandlerMono::STAGE_PAUSED)
     usleep(100000);

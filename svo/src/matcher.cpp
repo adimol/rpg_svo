@@ -250,8 +250,8 @@ bool Matcher::findEpipolarMatchDirect(
 
   if(n_steps > options_.max_epi_search_steps)
   {
-    printf("WARNING: skip epipolar search: %zu evaluations, px_lenght=%f, d_min=%f, d_max=%f.\n",
-           n_steps, epi_length_, d_min, d_max);
+    //printf("WARNING: skip epipolar search: %zu evaluations, px_lenght=%f, d_min=%f, d_max=%f.\n",
+    //       n_steps, epi_length_, d_min, d_max);
     return false;
   }
 
