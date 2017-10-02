@@ -45,8 +45,8 @@ public:
 
 BenchmarkNode::BenchmarkNode()
 {
-  cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
-  //cam_ = new vk::ATANCamera(640, 480,  0.509326, 0.796651, 0.45905, 0.510056, 1);
+  //cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
+  cam_ = new vk::ATANCamera(752, 480,  0.509326, 0.796651, 0.45905, 0.510056, 0.9320);
   vo_ = new svo::FrameHandlerMono(cam_);
   vo_->start();
 }
@@ -59,12 +59,12 @@ BenchmarkNode::~BenchmarkNode()
 
 void BenchmarkNode::runFromFolder()
 {
-  for(int img_id = 2; img_id < 184; ++img_id)
+  for(int img_id = 0; img_id < 1360; ++img_id)
   {
     // load image
     std::stringstream ss;
     ss << svo::test_utils::getDatasetDir() << "/sin2_tex2_h1_v8_d/img/"
-       << std::setw( 6 ) << std::setfill( '0' ) << img_id << ".png";
+       << std::setw( 6 ) << std::setfill( '0' ) << img_id << ".jpg";
     if(img_id == 2);
       //std::cout << "reading image " << ss.str() << std::endl;
     cv::Mat img(cv::imread(ss.str().c_str(), 0));

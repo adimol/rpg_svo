@@ -89,9 +89,9 @@ for file in glob.glob("*.csv"):
     i += 1
 
 # use this to control the scale of the axesis
-ax.set_xlim3d(-0.5, 2)
-ax.set_ylim3d(-0.5, 2)
-ax.set_zlim3d(-0.5, 2)
+ax.set_xlim3d(-5, 25)
+ax.set_ylim3d(-5, 25)
+ax.set_zlim3d(-5, 25)
 
 # labels
 ax.set_xlabel('X')

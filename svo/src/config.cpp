@@ -72,14 +72,14 @@ Config::Config() :
     structureoptim_num_iter(5),
     loba_thresh(2.0),
     loba_robust_huber_width(1.0),
-    loba_num_iter(0),
+    loba_num_iter(10),
     kfselect_mindist(0.12),
     triang_min_corner_score(20.0),
     triang_half_patch_size(4),
     subpix_n_iter(10),
-    max_n_kfs(20),
+    max_n_kfs(50),
     img_imu_delay(0.0),
-    max_fts(120),
+    max_fts(200),
     quality_min_fts(50),
     quality_max_drop_fts(40)
 #endif
