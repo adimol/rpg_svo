@@ -85,7 +85,7 @@ void twoViewBA(
   // Optimization
   double init_error, final_error;
   runSparseBAOptimizer(&optimizer, Config::lobaNumIter(), init_error, final_error);
-  printf("2-View BA: Error before/after = %f / %f\n", init_error, final_error);
+  //printf("2-View BA: Error before/after = %f / %f\n", init_error, final_error);
 
   // Update Keyframe Positions
   frame1->T_f_w_.rotation_matrix() = v_frame1->estimate().rotation().toRotationMatrix();
@@ -116,7 +116,7 @@ void twoViewBA(
       ++n_incorrect_edges;
     }
 
-  printf("2-View BA: Wrong edges =  %zu\n", n_incorrect_edges);
+  //printf("2-View BA: Wrong edges =  %zu\n", n_incorrect_edges);
 }
 
 void localBA(
