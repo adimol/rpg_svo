@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 runs = 10 # number of graphs to be plotted
 targetNum = 1 # Target means both platform and configration
-readExistingData = 1  # in the data file
+readExistingData = 0  # in the data file
 
 if readExistingData == 0:
     os.system('./bin/test_pipeline | tee final_result.csv')
@@ -89,9 +89,9 @@ for file in glob.glob("*.csv"):
     i += 1
 
 # use this to control the scale of the axesis
-ax.set_xlim3d(-0.5, 2)
-ax.set_ylim3d(-0.5, 2)
-ax.set_zlim3d(-0.5, 2)
+ax.set_xlim3d(-5, 25)
+ax.set_ylim3d(-5, 25)
+ax.set_zlim3d(-5, 25)
 
 # labels
 ax.set_xlabel('X')
