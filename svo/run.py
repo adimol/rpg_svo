@@ -10,10 +10,15 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 
-# change readExistingData to 0 for generating new data, or 1 for reading from file.
-# graphs are read for each final_resultX.csv file, where X starts from 0..runs
-# final_result0.csv should be the ground truth.
+# change readExistingData to 0 for generating new data, or 1 for plotting from existing csv files.
 
+# graphs are read for each csv file
+
+# ground_truth for both artificial and mav_circle datasets are located in the ground_truth folder. Copy
+#    the one specific to the used dataset in this main SVO folder. Adjust the camera parameters in SVO
+#    in the file ./test/test_pipeline.cpp, then run the python script to generate the data and the graphs.
+
+# the generated data from SVO is placed in a file final_result.csv
 
 runs = 10 # number of graphs to be plotted
 targetNum = 1 # Target means both platform and configration
