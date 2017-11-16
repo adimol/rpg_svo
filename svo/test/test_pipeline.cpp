@@ -75,6 +75,10 @@ void BenchmarkNode::read_memory() {
 void BenchmarkNode::runFromFolder()
 {
   read_memory();
+
+  vk::Timer time;
+  time.start();
+
   for (int img_id = 0; img_id < images.size(); img_id++)
   {
     assert(!images[img_id].empty()); // just to be safer
@@ -92,6 +96,7 @@ void BenchmarkNode::runFromFolder()
     	// access the pose of the camera via vo_->lastFrame()->T_f_w_.
     }
   }
+  std::cout << "Total time: " << time.stop() << std::endl;
 }
 
 } // namespace svo
