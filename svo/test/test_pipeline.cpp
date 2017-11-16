@@ -36,6 +36,8 @@ class BenchmarkNode
 {
   vk::AbstractCamera* cam_;
   svo::FrameHandlerMono* vo_;
+  std::vector<cv::Mat> images;
+  void read_memory();
 
 public:
   BenchmarkNode();
@@ -56,21 +58,29 @@ BenchmarkNode::~BenchmarkNode()
   delete cam_;
 }
 
+void BenchmarkNode::read_memory() {
+  std::cout << "Reading dataset in memory..." << std::endl;
+  int img_id = 0;
+  while (true) {
+    std::stringstream ss;
+    ss << svo::test_utils::getDatasetDir() << "/img/"
+       << std::setw(5) << std::setfill('0') << img_id++ << ".png";
+    cv::Mat img(cv::imread(ss.str().c_str(), 0));
+    if (img.empty())
+      break;
+    images.push_back(img);
+  }
+}
+
 void BenchmarkNode::runFromFolder()
 {
-  for(int img_id = 2; img_id < 188; ++img_id)
+  read_memory();
+  for (int img_id = 0; img_id < images.size(); img_id++)
   {
-    // load image
-    std::stringstream ss;
-    ss << svo::test_utils::getDatasetDir() << "/sin2_tex2_h1_v8_d/img/frame_"
-       << std::setw( 6 ) << std::setfill( '0' ) << img_id << "_0.png";
-    if(img_id == 2)
-      std::cout << "reading image " << ss.str() << std::endl;
-    cv::Mat img(cv::imread(ss.str().c_str(), 0));
-    assert(!img.empty());
+    assert(!images[img_id].empty()); // just to be safer
 
     // process frame
-    vo_->addImage(img, 0.01*img_id);
+    vo_->addImage(images[img_id], 0.01*img_id);
 
     // display tracking quality
     if(vo_->lastFrame() != NULL)
