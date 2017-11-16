@@ -142,10 +142,11 @@ protected:
   bool seeds_updating_halt_;            //!< Set this value to true when seeds updating should be interrupted.
   boost::thread* thread_;
   std::queue<FramePtr> frame_queue_;
-  boost::mutex frame_queue_mut_;
-  boost::condition_variable frame_queue_cond_;
+  boost::mutex frame_queue_mut_, mapper_finished_mut_;
+  boost::condition_variable frame_queue_cond_, mapper_finished_cond_;
   FramePtr new_keyframe_;               //!< Next keyframe to extract new seeds.
   bool new_keyframe_set_;               //!< Do we have a new keyframe to process?.
+  bool mapper_finished_;
   double new_keyframe_min_depth_;       //!< Minimum depth in the new keyframe. Used for range in new seeds.
   double new_keyframe_mean_depth_;      //!< Maximum depth in the new keyframe. Used for range in new seeds.
   vk::PerformanceMonitor permon_;       //!< Separate performance monitor since the DepthFilter runs in a parallel thread.

@@ -89,8 +89,16 @@ void DepthFilter::addFrame(FramePtr frame)
         frame_queue_.pop();
       frame_queue_.push(frame);
     }
+
     seeds_updating_halt_ = false;
     frame_queue_cond_.notify_one();
+
+    {
+        lock_t lock(mapper_finished_mut_);
+        while (!mapper_finished_)
+            mapper_finished_cond_.wait(lock);
+    }
+    mapper_finished_ = false;
   }
   else
     updateSeeds(frame);
@@ -103,9 +111,18 @@ void DepthFilter::addKeyframe(FramePtr frame, double depth_mean, double depth_mi
   if(thread_ != NULL)
   {
     new_keyframe_ = frame;
+
     new_keyframe_set_ = true;
-    seeds_updating_halt_ = true;
     frame_queue_cond_.notify_one();
+
+    {
+        lock_t lock(mapper_finished_mut_);
+        while (!mapper_finished_)
+            mapper_finished_cond_.wait(lock);
+    }
+    mapper_finished_ = false;
+
+    seeds_updating_halt_ = true;
   }
   else
     initializeSeeds(frame);
@@ -189,6 +206,13 @@ void DepthFilter::updateSeedsLoop()
       }
     }
     updateSeeds(frame);
+
+    {
+        lock_t lock(mapper_finished_mut_);
+        mapper_finished_ = true;
+        mapper_finished_cond_.notify_all();
+    }
+
     if(frame->isKeyframe())
       initializeSeeds(frame);
   }
