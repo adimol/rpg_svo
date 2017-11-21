@@ -45,7 +45,7 @@ class BenchmarkNode
   vk::AbstractCamera* cam_;
   svo::FrameHandlerMono* vo_;
   std::vector<cv::Mat> images;
-  void read_memory();
+  void read_memory(std::string const&);
 
 public:
   BenchmarkNode();
@@ -68,13 +68,13 @@ BenchmarkNode::~BenchmarkNode()
   delete cam_;
 }
 
-void BenchmarkNode::read_memory() {
+void BenchmarkNode::read_memory(std::string const& src) {
   std::cout << "Reading dataset in memory..." << std::endl;
   int img_id = 0;
   while (true) {
     std::stringstream ss;
-    ss << svo::test_utils::getDatasetDir() << "/img/"
-       << std::setw(5) << std::setfill('0') << img_id++ << ".png";
+    ss << src << "/img/"
+       << std::setw(6) << std::setfill('0') << img_id++ << ".jpg";
     cv::Mat img(cv::imread(ss.str().c_str(), 0));
     if (img.empty())
       break;

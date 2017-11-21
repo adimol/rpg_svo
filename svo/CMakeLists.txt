@@ -2,7 +2,7 @@
 # user build settings
 
 SET(TRACE TRUE)
-SET(HAVE_G2O FALSE) 
+SET(HAVE_G2O FALSE)
 SET(USE_ROS FALSE) # Set FALSE if you want to build this package without Catkin
 SET(DEBUG_OUTPUT FALSE) # Only relevant if build without ROS
 
@@ -31,6 +31,12 @@ ENDIF()
 
 # Set build flags, set ARM_ARCHITECTURE environment variable on Odroid
 # Set build flags. Set IS_ARM on odroid board as environment variable
+
+SET(Sophus_INCLUDE_DIRS /home/ak/software/Sophus_SVO/Sophus)
+SET(Sophus_LIBRARIES /home/ak/software/Sophus_SVO/Sophus/build/libSophus.so)
+SET(vikit_common_INCLUDE_DIRS /home/ak/software/rpg_vikit/vikit_common/include)
+SET(vikit_common_LIBRARIES /home/ak/software/rpg_vikit/vikit_common/lib/libvikit_common.so)
+
 SET(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
 IF(DEFINED ENV{ARM_ARCHITECTURE})
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon -march=armv7-a")
@@ -44,10 +50,10 @@ ELSE()
 ENDIF()
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
 
-# Add plain cmake packages 
+# Add plain cmake packages
 FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Eigen REQUIRED)
-FIND_PACKAGE(Sophus REQUIRED)
+#FIND_PACKAGE(Sophus REQUIRED)
 FIND_PACKAGE(fast REQUIRED)
 FIND_PACKAGE(Boost REQUIRED COMPONENTS thread system)
 
@@ -60,7 +66,7 @@ IF(USE_ROS)
       LIBRARIES svo
   )
 ELSE()
-  FIND_PACKAGE(vikit_common REQUIRED)
+  #FIND_PACKAGE(vikit_common REQUIRED)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
   SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 ENDIF()
@@ -76,7 +82,7 @@ INCLUDE_DIRECTORIES(
 )
 
 # Set link libraries
-LIST(APPEND LINK_LIBS 
+LIST(APPEND LINK_LIBS
   ${OpenCV_LIBS}
   ${Sophus_LIBRARIES}
   ${Boost_LIBRARIES}
@@ -148,4 +154,4 @@ ADD_EXECUTABLE(test_sparse_img_align test/test_sparse_img_align.cpp)
 TARGET_LINK_LIBRARIES(test_sparse_img_align svo)
 
 ADD_EXECUTABLE(test_pose_optimizer test/test_pose_optimizer.cpp)
-TARGET_LINK_LIBRARIES(test_pose_optimizer svo) 
+TARGET_LINK_LIBRARIES(test_pose_optimizer svo)
