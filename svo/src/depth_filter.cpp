@@ -185,6 +185,16 @@ void DepthFilter::reset()
 
 void DepthFilter::updateSeedsLoop()
 {
+  //   if (mappingThreadAff != -1) {
+  //   cpu_set_t cpuset;
+  //   CPU_ZERO(&cpuset);
+  //   CPU_SET(mappingThreadAff, &cpuset);
+  //   /* sched_setaffinity returns 0 in success */
+  //   if (sched_setaffinity(0, sizeof(cpuset), &cpuset) == -1) {
+  //     printf("Could not set CPU Affinity for mapping thread\n");
+  //     exit(0);
+  //   }
+  // }
   while(!boost::this_thread::interruption_requested())
   {
     FramePtr frame;

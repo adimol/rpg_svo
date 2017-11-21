@@ -28,7 +28,15 @@
 #include <opencv2/opencv.hpp>
 #include <sophus/se3.h>
 #include <iostream>
+#include <fstream>
 #include "test_utils.h"
+#include <thread>
+
+
+std::string source = "";
+// int sleepTime = -1;
+
+
 
 namespace svo {
 
@@ -47,7 +55,9 @@ public:
 
 BenchmarkNode::BenchmarkNode()
 {
-  cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
+  // cam_ = new vk::PinholeCamera(752, 480, 315.5, 315.5, 376.0, 240.0);
+  cam_ = new vk::ATANCamera(752, 480,  0.509326, 0.796651, 0.45905, 0.510056, 0.9320);
+
   vo_ = new svo::FrameHandlerMono(cam_);
   vo_->start();
 }
@@ -74,12 +84,41 @@ void BenchmarkNode::read_memory() {
 
 void BenchmarkNode::runFromFolder()
 {
-  read_memory();
+  struct timeval t1;
+  gettimeofday(&t1, NULL);
+
+  ofstream result;
+  result.open("result.txt");
+
+  // Sophus::SE3 T_world_from_vision_ = Sophus::SE3(vk::rpy2dcm(Eigen::Vector3d(3.14, 0.0, 0.5109)), // rotation
+  //                                                            Eigen::Vector3d(0.1131, 0.1131, 2.0)); // translation
+  Sophus::SE3 T_world_from_vision_ = Sophus::SE3(vk::rpy2dcm(Eigen::Vector3d(3.14, 0.0, 0.0)), // rotation
+                                                              Eigen::Vector3d(0.0, 0.0, 0.0)); // translation
+
+  if (source == "")
+    source = svo::test_utils::getDatasetDir();
+
+  read_memory(source);
+
+  struct timeval t2;
+  gettimeofday(&t2, NULL);
+
+  printf("The time taken before the actual start is %.3f ms\n", (t2.tv_sec - t1.tv_sec) * 1000.0f +
+                        (t2.tv_usec - t1.tv_usec) / 1000.0f);
+
+
+  // if (sleepTime != -1) {
+  //   std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
+  //   printf("Waited %d seconds after loading All images!\n",sleepTime);
+  // }
+
+
+
 
   vk::Timer time;
   time.start();
 
-  for (int img_id = 0; img_id < images.size(); img_id++)
+  for(unsigned int img_id = 0; img_id < images.size(); ++img_id)
   {
     assert(!images[img_id].empty()); // just to be safer
 
@@ -94,20 +133,117 @@ void BenchmarkNode::runFromFolder()
                   << "Proc. Time: " << vo_->lastProcessingTime()*1000 << "ms \n";
 
     	// access the pose of the camera via vo_->lastFrame()->T_f_w_.
+
+      const FramePtr& frame = vo_->lastFrame();
+
+      Sophus::SE3 T_world_from_cam(T_world_from_vision_ * frame->T_f_w_.inverse());
+      Eigen::Quaterniond q = Eigen::Quaterniond(T_world_from_cam.rotation_matrix());
+      Eigen::Vector3d p = T_world_from_cam.translation();
+
+      // std::cout << img_id << ","
+      //           << p[0] << ","
+      //           << p[1] << ","
+      //           << p[2] << ","
+      //           << q.x() << ","
+      //           << q.y() << ","
+      //           << q.z() << ","
+      //           << q.w() << std::endl;
+
+      result << std::setprecision(15);
+      result << img_id << " "
+                << p[0] << " "
+                << p[1] << " "
+                << p[2] << " "
+                << q.x() << " "
+                << q.y() << " "
+                << q.z() << " "
+                << q.w() << "\n";
+
     }
   }
-  std::cout << "Total time: " << time.stop() << std::endl;
+  printf("The time from actual start is %.3f ms\n", time.stop());
+  result.close();
 }
 
 } // namespace svo
 
+
+void parseArgument(char *arg) {
+  int option;
+  float foption;
+  char buf[1000];
+
+  // if (1 == sscanf(arg, "wait=%d", &option)) {
+  //     sleepTime = option;
+  //     return;
+  // }
+
+
+  // if (1 == sscanf(arg, "Taff=%d", &option)) {
+  //   if (option == 2 || option == 3) {
+  //     trackingThreadAff = option;
+  //     printf("Tracking thread affinity on QSD820: Big(%d)\n", trackingThreadAff);
+  //   } else if (option == 0 || option == 1) {
+  //     trackingThreadAff = option;
+  //     printf("Tracking thread affinity on QSD820: LITTLE(%d)\n", trackingThreadAff);
+  //   }else
+  //   {
+  //     printf("Note: The Affinity must be 0 to 3 for QSD820, using default setting\n");
+  //   }
+  //   return;
+  // }
+  //
+  // if (1 == sscanf(arg, "Maff=%d", &option)) {
+  //   if (option == 2 || option == 3) {
+  //     mappingThreadAff = option;
+  //     printf("Mapping thread affinity on QSD820: Big(%d)\n", mappingThreadAff);
+  //   } else if (option == 0 || option == 1) {
+  //     mappingThreadAff = option;
+  //     printf("Mapping thread affinity on QSD820: LITTLE(%d)\n", mappingThreadAff);
+  //   }else
+  //   {
+  //     printf("Note: The Affinity must be 0 to 3 for QSD820, using default setting\n");
+  //   }
+  //   return;
+  // }
+
+  if (1 == sscanf(arg, "dir=%s", buf)) {
+    source = buf;
+    printf("loading data from %s!\n", source.c_str());
+    return;
+  }
+
+
+  printf("could not parse argument \"%s\"!!!!\n", arg);
+}
+
+
+
 int main(int argc, char** argv)
 {
+
+  for (int i = 1; i < argc; i++)
+    parseArgument(argv[i]);
+
+
   {
+
+    // if (trackingThreadAff != -1) {
+    //
+    //   cpu_set_t cpuset;
+    //   CPU_ZERO(&cpuset);
+    //   CPU_SET(trackingThreadAff, &cpuset);
+    //   /* sched_setaffinity returns 0 in success */
+    //   if (sched_setaffinity(0, sizeof(cpuset), &cpuset) == -1) {
+    //     printf("Could not set CPU Affinity for tracking thread\n");
+    //     exit(0);
+    //   }
+    // }
+
+
     svo::BenchmarkNode benchmark;
     benchmark.runFromFolder();
   }
   printf("BenchmarkNode finished.\n");
   return 0;
 }
-
