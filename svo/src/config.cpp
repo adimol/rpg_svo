@@ -77,7 +77,7 @@ Config::Config() :
     triang_min_corner_score(20.0),
     triang_half_patch_size(4),
     subpix_n_iter(10),
-    max_n_kfs(0),
+    max_n_kfs(10),
     img_imu_delay(0.0),
     max_fts(120),
     quality_min_fts(50),
@@ -92,4 +92,3 @@ Config& Config::getInstance()
 }
 
 } // namespace svo
-
